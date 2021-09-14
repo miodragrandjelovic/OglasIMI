@@ -20,7 +20,7 @@ create table nalog
    korisnickoIme varchar(50) not null,
     lozinka varchar(50) not null,
     onOff boolean not null,
-    foreign key (idKroisnika) references korisnik(id) on delete cascade
+    foreign key (idKorisnika) references korisnik(id) on delete cascade
 )
 engine = innodb;
 
@@ -80,7 +80,7 @@ create table lajk
     id bigint primary key auto_increment,
     idOglasa bigint not null,
     idKorisnika bigint not null,
-    foreign key (idOglas) references oglas(id) on delete cascade,
+    foreign key (idOglasa) references oglas(id) on delete cascade,
     foreign key (idKorisnika) references korisnik(id) on delete cascade
 )
 engine = innodb;
@@ -94,3 +94,4 @@ create table pregled
     foreign key (idKorisnika) references korisnik(id) on delete cascade
 )
 engine = innodb;
+
