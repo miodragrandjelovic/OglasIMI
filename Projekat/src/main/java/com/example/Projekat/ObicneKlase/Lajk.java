@@ -1,21 +1,20 @@
-package Kontroleri;
+package com.example.Projekat.ObicneKlase;
 
-public class Pregled {
-
+public class Lajk {
     private long id;
     private Korisnik korisnik;
     private Oglas oglas;
 
-    public long getId() {
-        return id;
-    }
+    public Lajk(){}
 
-    public Pregled(){}
-
-    public Pregled(long id, Korisnik korisnik, Oglas oglas){
+    public Lajk(long id, Korisnik korisnik, Oglas oglas){
         this.id = id;
         this.korisnik = korisnik;
         this.oglas = oglas;
+    }
+
+    public long getId() {
+        return id;
     }
 
     public void setId(long id) {
@@ -26,7 +25,7 @@ public class Pregled {
         return korisnik;
     }
 
-    public void setKorisnik(Korisnik korisnik) {
+    public void setKorisni(Korisnik korisnik) {
         this.korisnik = korisnik;
     }
 
@@ -37,5 +36,4 @@ public class Pregled {
     public void setOglas(Oglas oglas) {
         this.oglas = oglas;
     }
-
 }

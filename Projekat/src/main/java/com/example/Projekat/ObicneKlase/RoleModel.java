@@ -1,4 +1,4 @@
-package Kontroleri;
+package com.example.Projekat.ObicneKlase;
 
 public class RoleModel {
 
@@ -37,6 +37,4 @@ public class RoleModel {
     public void setRoleModel(String roleModel) {
         this.roleModel = roleModel;
     }
-
 }
-

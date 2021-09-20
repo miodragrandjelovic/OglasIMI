@@ -3,10 +3,8 @@
 <html>
     <head>
 
-<link href="css/reg.css" rel="stylesheet">
+        <link href="css/reg.css" rel="stylesheet">
         <link href="css/styles.css" rel="stylesheet" />
-
-
 
 </head>
 
@@ -31,67 +29,79 @@
 
 </nav>
 <div class="container register">
+
                 <div class="row">
                     <div class="col-md-3 register-left">
                         <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt=""/>
                         <h3>Dobrodosli</h3>
                         <p>Samo Vas registracija deli od pronalaska zeljenog posla!</p>
-                        <input type="submit" name="" value="Login"/><br/>
+                        <a th:href="@{'login'}"> <input type="submit" name="" value="Login" /> </a><br/>
                     </div>
                     <div class="col-md-9 register-right">
                        
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <h3 class="register-heading">Registracija</h3>
-                                <div class="row register-form">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Ime *" value="" />
+                                <h3 class="register-heading" style="display:block;">Registracija</h3>
+
+
+                                <div>
+                                    <input type="button" class="btnRegister" style="width:150px; height: 40px; padding:0px;" value="Radnik"/>
+                                    <input type="button" class="btnRegister" style="width:150px; height: 40px; padding:0px;"  value="Poslodavac"/>
+                                </div>
+
+
+
+                                    <div class="row register-form">
+                                        <form th:action="@{/registracija/radnik}" method="post" th:object="${noviKorisnik}">
+                                        <div class="col-md-6">
+
+                                            <div class="form-group">
+                                                <input type="text" id="korisnickoIme" class="form-control" th:field="*{korisnickoIme}" placeholder="Korisnicko ime *" value="" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="email" id="eMail" class="form-control" th:field="*{eMail}" placeholder="Email *" value="" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="password" id="lozinka" class="form-control" th:field="*{lozinka}" placeholder="Lozinka *" value="" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="text" id="ime" class="form-control" th:field="*{ime}" placeholder="Ime *" value="" />
+                                                <input type="text" id="prezime" class="form-control" th:field="*{prezime}" placeholder="Prezime *" value="" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="date" id="datumRodjenja" class="form-control" th:field="*{datumRodjenja}" placeholder="Datum rodjenja *" value=""  />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <select class="form-control" id="pol" th:field="*{pol}">
+                                                    <option class="hidden"  selected disabled>Pol</option>
+                                                    <option th:value="Muski" style="font-weight: bold">Muski</option>
+                                                    <option th:value="Zenski" style="font-weight: bold">Zenski</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="text" id="drzava" class="form-control" th:field="*{drzava}" placeholder="Drzava *" value="" />
+                                            </div>
+
+                                            <div class="form-group">
+                                                <input type="text" id="grad" class="form-control" th:field="*{grad}" placeholder="Grad *" value=""  />
+                                            </div>
+
+
+                                            <div class="form-group">
+                                                <input type="file" id="file" name="file" required>
+                                            </div>
+
                                         </div>
-                                        <div class="form-group">
-                                            <select class="form-control">
-                                                <option class="hidden"  selected disabled>Pol</option>
-                                                <option style="font-weight: bold">Muski</option>
-                                                <option style="font-weight: bold">Zenski</option>
-                                            </select>
-                                        </div>
 
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="" value="Datum rodjenja :" disabled=""  />
-                                        </div>
-
-
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Korisnicko ime *" value="" />
-                                        </div>
-
-                                        <div class="form-group">
-                                            <input type="email" class="form-control" placeholder="Email *" value="" />
-                                        </div>
-
-                                        <div class="form-group">
-
-                                        </div>
-
+                                        </form>
                                     </div>
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Prezime *" value="" />
-                                        </div>
 
-                                        <div class="form-group">
-                                            <input type="text" class="form-control" placeholder="Adresa *" value="" />
-                                        </div>
-
-                                        <div class="form-group">
-                                            <input type="date" class="form-control" placeholder="" value="" />
-                                        </div>
-                                        <div class="form-group">
-                                            <input type="password" class="form-control"  placeholder="Password *" value="" />
-                                        </div>
-
-                                        <input type="submit" class="btnRegister"  value="Register"/>
-                                    </div>
                                 </div>
                             </div>
                             
@@ -100,6 +110,6 @@
                 </div>
 
             </div>
-
+<script src="functions.js"></script>
 </body>
 </html>

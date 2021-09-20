@@ -1,9 +1,8 @@
-package Kontroleri;
+package com.example.Projekat.ObicneKlase;
 
 import java.sql.Date;
 
 public class Oglas {
-
     private long id;
     private Korisnik poslodavac;
     private String naslov;
@@ -127,6 +126,4 @@ public class Oglas {
     public void setSlika(String slika) {
         this.slika = slika;
     }
-
-
 }

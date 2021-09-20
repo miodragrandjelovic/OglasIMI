@@ -1,464 +1,251 @@
+create database OGLASI;
+use OGLASI;
 
-insert into korisnik(ime,prezime,eMail,datumRodjenja,pol)
-values('Misa', 'Randjelovic', 'dobropamtimsve00@gmail.com','2000-4-2', 'muski');
-insert into korisnik(ime,prezime,eMail,datumRodjenja,pol)
-values('Katarina', 'Zdravkovic', 'kzdravkovic1@gmail.com','2000-5-17', 'zenski');
-insert into korisnik(ime,prezime,eMail,datumRodjenja,pol)
-values('Tijana', 'Markovic', 'tijanamarkovic176@gmail.com','2000-6-17', 'zenski');
-insert into korisnik(ime,prezime,eMail,datumRodjenja,pol)
-values('Tina', 'Petrovic', 'tinapetrovickv@gmail.com','2001-2-15', 'zenski');
+create table korisnik
+(
+    id bigint primary key auto_increment,
+    korisnickoIme varchar(50) not null,
+    lozinka varchar(50) not null,
+    aktivan boolean not null,
+    ime varchar(50) not null,
+    prezime varchar(50) not null,
+    eMail varchar(50) not null,
+    datumRodjenja date,
+    drzava varchar(50),
+    grad varchar(50),
+    pol varchar(50),
+    slika longblob
+)
+engine = innodb;
 
+create table rolemodel
+(
+    id bigint primary key auto_increment,
+    idKorisnika bigint not null,
+    korisnickoIme varchar(50) not null,
+    roleModel varchar(50) not null,
+    foreign key (idKorisnika) references korisnik(id) on delete cascade
+)
+engine = innodb;
 
-insert into nalog(idKorisnika, korisnickoIme, lozinka, onOff)
-values(1,'Misa','$2y$12$DQfkNokAQ2TmsWoEJkvYF.CTZ114C2w0LCUYTHxCftwfamQC4MyYm', true);
-insert into nalog(idKorisnika, korisnickoIme, lozinka, onOff)
-values(2,'Kata','$2y$12$DzuldZGsBaXbgYILqSX4PudyG1T4i6JZm0V9e.7OElTQEqPXuPp2S', true);
-insert into nalog(idKorisnika, korisnickoIme, lozinka, onOff)
-values(3,'Mare','$2y$12$3s2NGRsAF.HxWqxcJbkGluN3UApwc2/T9CPx8RjGHGNrS.NRp.zjq', true);
-insert into nalog(idKorisnika, korisnickoIme, lozinka, onOff)
-values(4,'Tina','$2y$12$1BvPsOz4fHB4gIQ1poPLQOe6/kKhmoO2eCnBSpdV./IaYcc5o2Lv2', true);
+create table oglas
+(
+    id bigint primary key auto_increment,
+    idPoslodavca bigint not null,
+    naslov varchar(50) not null,
+    tekst varchar(150) not null,
+    mesto varchar(50),
+    datumPostavljanja datetime not null,
+    datumZavrsetka datetime not null,
+    plata double not null,
+    kategorija varchar(50) not null,
+    podkategorija varchar(50) null,
+    radOdKuce boolean,
+    aktiviran boolean not null,
+    foreign key (idPoslodavca) references korisnik(id) on delete cascade
+)
+engine = innodb;
 
-insert into rolemodel(idNaloga, korisnickoIme, roleModel)
-values(1, 'Misa', "ADMIN");
-insert into rolemodel(idNaloga, korisnickoIme, roleModel)
-values(2, 'Kata', "POSLODAVAC");
-insert into rolemodel(idNaloga, korisnickoIme, roleModel)
-values(3, 'Mare', "POSLODAVAC");
-insert into rolemodel(idNaloga, korisnickoIme, roleModel)
-values(4, 'Tina', "RADNIK");
+create table prijava
+(
+    id bigint primary key auto_increment,
+    idKorisnika bigint not null,
+    idOglasa bigint not null,
+    datumPrijave datetime not null,
+    foreign key (idKorisnika) references korisnik(id) on delete cascade,
+    foreign key (idOglasa) references oglas(id) on delete cascade
+)
+engine = innodb;
 
+create table komentar
+(
+    id bigint primary key auto_increment,
+    idOglasa bigint not null,
+    idKorisnika bigint not null,
+    tekst varchar(150) not null,
+    datumPostavljanja datetime not null,
+    foreign key (idOglasa) references oglas(id) on delete cascade,
+    foreign key (idKorisnika) references korisnik(id) on delete cascade
+)
+engine = innodb;
 
-insert into oglas(idPoslodavca, naslov, tekst, mesto, datumPostavljanja, datumZavrsetka, plata, aktiviran, kategorija, podkategorija, radOdKuce)
-values(2,'Budi svoj gazda!',"Posao koji mozes da radis i ti! Zapocni svoj posao bez ulaganja! Nauci da zaradjujes! Kompletan sistem je besplatan! PRUZI SEBI SANSU!",'Gornji Milonovac',now(), date_add(now(), interval 5 month),25000,true,'ekonmista','prodaja',0);
-insert into oglas(idPoslodavca, naslov, tekst, mesto, datumPostavljanja, datumZavrsetka, plata, aktiviran, kategorija, podkategorija, radOdKuce)
-values(2,'Treba ti promena u 2020? Evo kako da dodjes do posla iz snova!',"Trazis posao koji mozes raditi od kuce? Ovo je prava stvar za tebe, radis u svom domu, kad i koliko hoces. Bitna stvar je da se radi o firmi koja postoji preko 20 godina, i mozes imati platu svaki mesec, a kolika će biti zavisi od tebe. Obuka i registracija besplatna. Zainteresovani? Pridruzi se jednom velikom timu i pocni da zaradjujes odmah!",'Kraljevo',now(), date_add(now(), interval 1 month),50000,true,'programer','html',1);
-insert into oglas(idPoslodavca, naslov, tekst, mesto, datumPostavljanja, datumZavrsetka, plata, aktiviran, kategorija, podkategorija, radOdKuce)
-values(3,'Postani uspesna! Zelis da se ostvaris na poslovnom planu? Evo i kako',"Danas se od zene ocekuje da bude uspesna i u kuci i na poslu. Ja sam nasla nacin za to. Nudim ti pomoc da i ti ostvaris svoj san. Potrebne saradnice za online i katalosku prodaju Limes proizvoda. Prvostepena zarada 33% na svaki prodati proizvod, drugostepena zarada 33%+plata bonusi, nagrade, gratisi, radis kad, koliko i odakle zelis.. Budi deo mog tima, gde se trud isplati!",'Josanicka Banja',now(), date_add(now(), interval 6 month),75000,true,'ekonomista','markteing',1);
+create table lajk
+(
+    id bigint primary key auto_increment,
+    idOglasa bigint not null,
+    idKorisnika bigint not null,
+    foreign key (idOglasa) references oglas(id) on delete cascade,
+    foreign key (idKorisnika) references korisnik(id) on delete cascade
+)
+engine = innodb;
 
+create table pregled
+(
+    id bigint primary key auto_increment,
+    idOglasa bigint not null,
+    idKorisnika bigint not null,
+    foreign key (idOglasa) references oglas(id) on delete cascade,
+    foreign key (idKorisnika) references korisnik(id) on delete cascade
+)
+engine = innodb;
 
+////////////////////////////////////////////////////////////////////////
 
-insert into prijava(idKorisnika, idOglasa, datumPrijave)
-values(4,4,now());
-insert into prijava(idKorisnika, idOglasa, datumPrijave)
-values(4,6,now());
-
-
-insert into komentar(idOglasa,idKorisnika,tekst,datum_postavljanja)
-values(5,4,"Kada moze da se pocne sa radom?",now());
-
-
-
-
+// KORISNIK
 
 delimiter //
-create procedure SviOglasi()
+create procedure PoslednjiIdKorisnika()
 begin
-   select * 
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id
-    where now() between datumPostavljanja and datumZavrsetka and aktiviran = 1;
-end
-//
-delimiter //
-create procedure jedanOglas(id bigint)
-begin
-   select * 
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id 
-    where id = oglas.id and aktiviran = 1;
-end
-//
-delimiter //
-create procedure dajGradOglas(grad varchar(500))
-begin
-   select * 
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id
-    where now() between datumPostavljanja and datumZavrsetka and upper(oglas.mesto) = upper(grad) and aktiviran = 1; 
-end
-//
-delimiter //
-create procedure dajKategorijaOglas(kat varchar(500))
-begin
-   select * 
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id
-    where now() between datumPostavljanja and datumZavrsetka and upper(oglas.kategorija) = upper(kat) and aktiviran = 1; 
-end
-//
-delimiter //
-create procedure dajGradKategorijaOglas(grad varchar(500), kat varchar(500))
-begin
-   select * 
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id
-    where now() between datumPostavljanja and datumZavrsetka and upper(oglas.kategorija) =upper( kat) and upper(oglas.mesto) =upper(grad) and aktiviran = 1; 
-end
-//
-delimiter //
-create procedure jednaKorisnik(idK bigint)
-begin
-   select *
-    from korisnik
-    where korisnik.id = idK;
-end
-//
-
-
-delimiter //
-create procedure jedanNalog(idN bigint)
-begin 
-   select *
-    from nalog join korisnik on nalog.idKorisnika = korisnik.id
-    where nalog.id = idN;
-end
-//
-
-delimiter //
-create procedure sviNalozi()
-begin
-   select *
-    from nalog join korisnik on nalog.idKorisnika = korisnik.id;
-end
-//
-delimiter //
-create procedure oglasePrekoKorImena(imeKorisnika varchar(500))
-begin
-   select *
-    from oglas join korisnik on oglas.idPoslodavca =  korisnik.id join nalog on nalog.idKorisnika = korisnik.id
-    where now() between datumPostavljanja and datumZavrsetka and nalog.korisnickoIme = imeKorisnika and aktiviran = 1;
-end
-//
-delimiter //
-create procedure dajrm(uloga varchar(500))
-begin
-   select *
-    from korisnik join nalog on korisnik.id = nalog.idKorisnika join rolemodel on nalog.id = rolemodel.idNaloga
-    where rolemodel.roleModel = uloga;
-end
-//
-
-
-delimiter //
-create procedure obrisiKorisnika(idK bigint)
-begin
-   delete from korisnik where korisnik.id = idK;
-end
-//
-
-delimiter //
-create procedure obrisiOglas(idO bigint)
-begin
-   delete from oglas where oglas.id = idO;
-end
-//
-
-delimiter //
-create procedure unesiKorisnika(novoIme varchar(500), novoPrezime varchar(500), noveMail varchar(500), novDatumRodjenja date, novPol varchar(50))
-begin
-   insert into korisnik(ime,prezime,eMail,datumRodjenja,pol,slika)
-   values(novoIme,novoPrezime,noveMail,novDatumRodjenja,novPol,null);
-end
-//
-
-delimiter //
-create procedure unesiNalog(idN bigint, imeKorisnika varchar(500), sifra varchar(500))
-begin
-   insert into nalog(idKorisnika, korisnickoIme, lozinka, onOff)
-   values(idN, imeKorisnika, sifra, true);
-end
-//
-
-delimiter //
-create procedure dajNalogKorisnika(imeKorisnika varchar(500))
-begin
-   select *
-    from korisnik join nalog on korisnik.id = nalog.idKorisnika
-    where nalog.korisnickoIme= imeKorisnika;
-end
-//
-
-delimiter //
-create procedure unesiRoleModel(idK bigint, imeKorisnika varchar(500), uloga varchar(500))
-begin
-   insert into rolemodel(idNaloga, korisnickoIme, roleModel)
-   values(idK, imeKorisnika, uloga);
-end
-//
-
-delimiter //
-create procedure dajPoslednjiIDKorisnika()
-begin
-   select max(id)
+	select max(id)
     from korisnik;
 end
 //
-
 delimiter //
-create procedure dajPoslednjiIDNaloga()
+create procedure KorisnikPrekoImena(korisnickoImet varchar(255))
 begin
-   select max(id)
-    from nalog;
+	select *
+	from korisnik
+    where korisnickoIme = korisnickoImet;
+end
+//
+delimiter //
+create procedure PronadjiKorisnickoIme(korisnickoImet varchar(255))
+begin
+	select * from korisnik
+    where korisnickoIme = korisnickoImet;
+end
+//
+delimiter //
+create procedure PronadjiEmail(emailt varchar(255))
+begin
+	select * from korisnik
+    where eMail = emailt;
+end
+//
+delimiter //
+create procedure UnesiKorisnika(korisnickoImet varchar(50), lozinkat varchar(50), imet varchar(50), prezimet varchar(50), emailt varchar(50), datumRodjenjat date, drzavat varchar(50), gradt varchar(50), polt varchar(10))
+begin
+	insert into korisnik(korisnickoIme, lozinka, aktivan, ime, prezime, eMail, datumRodjenja, drzava, grad, pol)
+	values(korisnickoImet, lozinkat, true, imet, prezimet, emailt, datumRodjenjat, drzavat, gradt, polt);
+end
+//
+delimiter //
+create procedure PromeniPodatkeKorisnika(idKorisnikat bigint, korisnickoImet varchar(50), lozinkat varchar(50), imet varchar(50), prezimet varchar(50), emailt varchar(50), datumRodjenjat date, drzavat varchar(50), grad varchar(50), polt varchar(10))
+begin
+    update korisnik
+    set korisnickoIme = korisnikoImet, lozika = lozinkat, ime = imet, preizme = prezimet, eMail = emailt, datumRodjenja = datumRodjenjat, drzava = drzavat, grad = gradt, pol = polt
+    where idKorisnika = idKorisnikat;
+end
+//
+delimiter //
+create procedure PostaviSlikuKorisnika(idt bigint, slikat longblob)
+begin
+    update korisnik
+    set slika = slikat
+    where id = idt;
+end
+//
+delimiter //
+create procedure UnesiRoleModel(idKorisnikat bigint, korisnickoImet varchar(50), roleModelt varchar(50))
+begin
+    insert into roleModel(idKorisnika, korisnickoIme, roleModel)
+    values(idKorisnikat, korisnickoImet, roleModelt);
 end
 //
 
+// OGLASI
+
 delimiter //
-create procedure dajeMail(mail varchar(500))
+create procedure UnesiOglas(idPoslodavcat bigint, naslovt varchar(50), tekstt varchar(150), mestot varchar(50), datumPostavljanjat date, datumZavrsetkat date , platat double, kategorijat varchar(50), podkategorijat varchar(50),radOdKucet boolean)
 begin
-   select * from korisnik
-    where eMail = mail;
+    insert into oglas(idPoslodavca, naslov, tekst, mesto, datumPostavljanja, datumZavrsetka, plata, kategorija, podkategorija,radOdKuce, aktiviran)
+    values(idPoslodavcat, naslovt, tekstt, mestot, datumPostavljanjat, datumZavrsetkat, platat, kategorijat, podkategorijat,radOdKucet, true);
+end
+//
+delimiter //
+create procedure SviOglasi()
+begin
+    select * from oglas;
+end
+//
+delimiter //
+create procedure DajOglas(idOglasat bigint)
+begin
+    select * from oglas o join korisnik k on o.idPoslodavca = k.id
+    where o.idOglasa = idOglasat;
 end
 //
 
+// PRIJAVE
+
 delimiter //
-create procedure prijaviKorisnikaNaOglas(idK bigint, idO bigint)
+create procedure UnesiPrijavu(idKorisnikat bigint, idOglasat bigint)
 begin
-   insert into prijava(idKorisnika, idOglasa ,datumPrijave)
-   values(idK, idO, now());
+    insert into prijava(idKorisnika, idOglasa, datumPrijave)
+    values(idKorisnikat, idOglasat, now());
 end
 //
-
 delimiter //
-create procedure dajPrijavuKorisnikaNaOglas(idK bigint, idO bigint)
+create procedure SvePrijaveZaOglas(idOglasat bigint)
 begin
-   select *
-    from prijava
-    where idKorisnika = idK and idOglasa = idO;
-end
-//
-
-delimiter //
-create procedure postaviOglas(idP bigint, naziv varchar(500), opis varchar(1500), grad varchar(500), novac double,kat varchar(500), podkat varchar(500),rOdK tinyint)
-begin
-   insert into oglas(idPoslodavca, naslov, tekst, mesto, datumPostavljanja, datumZavrsetka, plata, aktiviran,kategorija,podkategodrija,radOdKuce)
-   values(idP, naziv, opis, grad, now(), date_add(now(), interval 1 month), novac, 1,kat,podkat,rOdK);
-end
-//
-
-delimiter //
-create procedure promeniPodatkeKorisnika(idK bigint, novoIme varchar(500), novoPrezime varchar(500), noveMail varchar(500),novDatum date, novPol varchar(50))
-begin
-   update korisnik
-   set ime = novoIme, prezime = novoPrezime, eMail = noveMail,  datumRodjenja = novDatum, pol = novPol
-   where id = idK;
-end
-//
-
-delimiter //
-create procedure promeniSliku(idK bigint, novaSlika longblob)
-begin
-   update korisnik
-   set  slika= novaSlika
-   where id = idK;
-end
-//
-
--- FUNKCIJE ZA KOMENTAR
-
-delimiter //
-create procedure dajPoslednjiIDKomentara()
-begin
-   select max(id)
-    from komentar;
-end
-//
-
-delimiter //
-create procedure dodajKomentar(idO bigint, idK bigint, kom varchar(1500))
-begin
-    insert into komentar(idOglasa, idKorisnika,tekst, datum_postavljanja)
-    values(idO, idK,kom, now());
-end
-//
-
-delimiter //
-create procedure obrisiKomentar(idK bigint)
-begin
-    delete from komentar where id = idK;
-end
-//
-
-delimiter //
-create procedure jedanKomentar(idK bigint)
-begin
-    select * from komentar join oglas on komentar.idOglasa = oglas.id join korisnik on komentar.idKorisnika = korisnik.id
-    where komentar.id = idK;
-end
-//
-
-delimiter //
-create procedure dajSveKomentare()
-begin
-    select * from komentar join oglas on komentar.idOglasa = oglas.id join korisnik on komentar.idKorisnika = korisnik.id 
-    order by convert(komentar.datum_postavljanja, datetime) desc;
-end
-//
-
--- KRAJ FUNKCIJA ZA KOMENTAR
-
-delimiter //
-create procedure vratiUlogu(idK bigint)
-begin
-    select rolemodel.roleModel
-    from korisnik join nalog on korisnik.id = nalog.idKorisnika join rolemodel on nalog.id = rolemodel.idNaloga
-    where korisnik.id = idK;
+    select * from prijava
+    where idOglasa = idOglasat;
 end
 //
 
 
-
-
-delimiter //
-create procedure onemoguciNalog(idN bigint)
-begin
-   update nalog set onOff = 0 where id = idN;
-end
-//
+// PREGLED I LAJK
 
 delimiter //
-create procedure omoguciKorisnika(idN bigint)
-begin
-   update nalog set onOff = 1 where id = idN;
-end
-//
-
-delimiter //
-create procedure poslodavacURadnika(idN bigint, idP bigint)
-begin
-   update rolemodel set roleModel = 'RADNIK' where idNaloga = idN;
-    update oglas set aktiviran = 0 where idPoslodavca = idP;
-end
-//
-
-delimiter //
-create procedure radnikUPoslodavca(idN bigint, idP bigint)
-begin
- update rolemodel set roleModel = 'POSLODAVAC' where idNaloga = idN;
-    update oglas set aktiviran = 1 where idPoslodavca = idP;
-end
-//
-
-delimiter //
-create procedure postaviZaAdmina(idN bigint)
-begin
-   update autoritet set roleModel = 'ADMIN' where idNaloga = idN;
-end
-//
-delimiter //
-create procedure dajPrijaveNaOglasPoslodavca(idP bigint, idO bigint)
-begin
-   select *
-    from prijava join korisnik on prijava.idKorisnika = korisnik.id 
-    join nalog on korisnik.id = nalog.idKorisnika 
-    join rolemodel on nalog.id = rolemodel.idNaloga
-    join oglas on prijava.idOglasa = oglas.id
-    where (rolemodel.roleModel = 'RADNIK' or rolemodel.roleModel = 'ADMIN') and idP = oglas.idPoslodavca and idO = prijava.idOglasa;
-end
-//
-
-delimiter //
-create procedure dajIDPoslodavcaOglasa(idO bigint)
-begin
-   select korisnik.id
-    from oglas join korisnik on oglas.idPoslodavca = korisnik.id
-    join nalog on korisnik.id = nalog.idKorisnika
-    where oglas.id = idO;
-end
-//
--- FUNKCIJE ZA PREGLEDE i LAJKOVANJE
-
-delimiter //
-create procedure dajPregled(idP bigint)
-begin
-    select * from pregled join oglas on pregled.idOglasa = oglas.id join korisnik on pregled.idKorisnika = korisnik.id
-    where pregled.id = idP;
-end
-//
-
-delimiter //
-create procedure dajSvePreglede()
-begin
-    select * from pregled join oglas on pregled.idOglasa = oglas.id join korisnik on pregled.idKorisnika = korisnik.id;
-end
-//
-delimiter //
-create procedure dajLajk(idL bigint)
-begin
-    select * from lajk join oglas on lajk.idOglasa = oglas.id join korisnik on lajk.idKorisnika = korisnik.id
-    where lajk.id = idL;
-end
-//
-
-delimiter //
-create procedure dajSveLajkove()
-begin
-    select * from lajk join oglas on lajk.idOglasa = oglas.id join korisnik on lajk.idKorisnika = korisnik.id;
-end
-//
-
-delimiter //
-create procedure dajSvePregledeKorisnika(idK bigint)
-begin
-    select * from pregled join oglas on pregled.idOglasa = oglas.id join korisnik on pregled.idKorisnika = korisnik.id
-    where pregled.idKorisnika = idK;
-end
-//
-
-delimiter //
-create procedure dajSveLajkoveOsobe(idK bigint)
-begin
-    select * from lajk join oglas on pregled.idOglasa = lajk.id join korisnik on lajk.idKorisnika = korisnik.id
-    where lajk.idKorisnika = idK;
-end
-//
-
-delimiter //
-create procedure dajBrojPregledaOglasa(idO bigint)
-begin
-    select count(id) from pregled
-    where pregled.idOglasa = idO;
-end
-//
-
-delimiter //
-create procedure dajBrojLajkovaOglasa(idO bigint)
-begin
-    select count(id) from lajk
-    where lajk.idOglasa = idO;
-end
-//
-
-delimiter //
-create procedure dodajLajk(idO bigint, idK bigint)
-begin
-    insert into lajk(idOglasa, idKorisnika)
-    values(idO, idK);
-end
-//
-delimiter //
-create procedure dodajPregled(idO bigint, idK bigint)
+create procedure UnesiPregled(idKorisnikat bigint, idOglasat bigint)
 begin
     insert into pregled(idOglasa, idKorisnika)
-    values(idO, idK);
+    values(idOglasat, idKorisnikat);
 end
 //
-
 delimiter //
-create procedure obrisiLajk(idO bigint, idK bigint)
+create procedure UnesiLajk(idKorisnikat bigint, idOglasat bigint)
 begin
-	delete from lajk 
-    where idOglasa = idO and idKorisnika = idK;
+    insert into lajk(idOglasa, idKorisnika)
+    values(idOglasat, idKorisnikat);
 end
 //
-
 delimiter //
-create procedure pregledaoOglas(idO bigint, idK bigint)
+create procedure UkloniLajk(idKorisnikat bigint, idOglasat bigint)
+begin
+    delete from lajk
+    where idKorisnika = idKorisnikat and idOglasa = idOglasat;
+end
+//
+delimiter //
+create procedure pregledaoOglas(idKorisnikat bigint, idOglasat bigint)
 begin
     select * from pregled
-    where idOglasa = idO and idKorisnika = idK;
+    where idKorisnika = idKorisnikat and idOglasa = idOglasat;
+end
+//
+delimiter //
+create procedure lajkovoOglas(idKorisnikat bigint, idOglasat bigint)
+begin
+    select * from lajk
+    where idKorisnika = idKorisnikat and idOglasa = idOglasat;
+end
+//
+delimiter //
+create procedure DajBrojPregledaOglasa(idOglasat bigint)
+begin
+    select count(id) from pregled
+    where idOglasa = idOglasat;
+end
+//
+delimiter //
+create procedure DajBrojLajkovaOglasa(idOglasat bigint)
+begin
+    select count(id) from lajk
+    where idOglasa = idOglasat;
 end
 //
 
-delimiter //
-create procedure lajkovoOglas(idO bigint, idK bigint)
-begin
-    select * from lajk
-    where idKorisnika = idK and idOglasa = idO;
-end
-//
--- KRAJ FUNKCIJA ZA PREGLEDE/LAJKOVANJE
+
+
+

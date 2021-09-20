@@ -1,9 +1,8 @@
-package Kontroleri;
+package com.example.Projekat.ObicneKlase;
 
 import java.sql.Date;
 
 public class Komentar {
-
     private long id;
     private Oglas oglas;
     private Korisnik korisnik;
@@ -55,6 +54,4 @@ public class Komentar {
     public void setDatumPostavljanja(Date datumPostavljanja) {
         this.datumPostavljanja = datumPostavljanja;
     }
-
 }
-

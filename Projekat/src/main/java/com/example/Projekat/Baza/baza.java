@@ -1,4 +1,4 @@
-package com.example.Projekat;
+package com.example.Projekat.Baza;
 
 import java.sql.Connection;
 import java.sql.Statement;
@@ -9,11 +9,11 @@ import java.sql.DriverManager;
 public abstract class baza {
     private Connection veza;
     protected Statement statement;
-    protected ResultSet rezultat;
+    protected ResultSet resultset;
     protected String sql;
     private String ime = "root";
     private String lozinka = "";
-    private String url = "jdbc:mariadb://localhost/oglasimi";
+    private String url = "jdbc:mariadb://localhost/oglasi";
 
     public baza() throws SQLException {
         veza = DriverManager.getConnection(url, ime, lozinka);

@@ -1,17 +1,20 @@
-package Kontroleri;
+package com.example.Projekat.ObicneKlase;
 
-public class Lajk {
+import java.sql.Date;
 
+public class Prijava {
     private long id;
     private Korisnik korisnik;
     private Oglas oglas;
+    private Date datumPrijave;
 
-    public Lajk(){}
+    public Prijava(){}
 
-    public Lajk(long id, Korisnik korisnik, Oglas oglas){
+    public Prijava(long id, Korisnik korisnik, Oglas oglas, Date datumPrijave){
         this.id = id;
         this.korisnik = korisnik;
         this.oglas = oglas;
+        this.datumPrijave = datumPrijave;
     }
 
     public long getId() {
@@ -26,7 +29,7 @@ public class Lajk {
         return korisnik;
     }
 
-    public void setKorisni(Korisnik korisnik) {
+    public void setKorisnik(Korisnik korisnik) {
         this.korisnik = korisnik;
     }
 
@@ -38,4 +41,11 @@ public class Lajk {
         this.oglas = oglas;
     }
 
+    public Date getDatumPrijave() {
+        return datumPrijave;
+    }
+
+    public void setDatumPrijave(Date datumPrijave) {
+        this.datumPrijave = datumPrijave;
+    }
 }
