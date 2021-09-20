@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -24,11 +24,16 @@ and open the template in the editor.
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
 
 
 
@@ -42,46 +47,49 @@ and open the template in the editor.
         <div class="container mt-4 mb-4">
             
                 <h1>Oglasi:</h1>
-                <span>Posao:</span> <br>
-                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px"><br>
-                <span>Grad:</span> <br>
-                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px"> <br>
-                <input type="button" value="Pronadji" style="margin-top: 4%">
+                <h3>Parametri pretrage:</h3>
+
+            <form th:action="@{/prikazoglasa}">
+
+                <span>Minimum plata:</span> <br>
+                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px" th:name="minPlata"><br>
+                <span>Maximum plata:</span> <br>
+                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px" th:name="maxPlata"> <br>
+
+                <span>Mesto:</span> <br>
+                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px" th:name="mesto"><br>
+                <span>Kategorija:</span> <br>
+                <input type="text" style="margin-bottom: 2px;width: 270px;height:35px" th:name="kategorija"> <br>
+                <span>Rad od kuce:</span>
+                <input type="checkbox" value="radOdKuce" th:name="radOdKuce">
+
+                <input type="submit" value="Pretrazi" style="margin-top: 4%">
+
+            </form>
                 
         </div>
-        
-        <div  style='background-color: #002237;width: 100%; height: 35px'>
+
+        <div style='background-color: #002237;width: 100%; height: 35px'>
             <p> </p>
         </div>
-        
-        <div class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px">   
-            <h2>Trazi se cistacica</h2>
-            <p>Poslodavac : Miodrag Randjelovic </p>
-            <p>Grad : Kragujevac </p>
-            <p>Kategorija : Kucni poslovi </p>
-            <p>Poslodavac : Ciscenje </p>
-            <input type="button" value="Otvori" style='margin-bottom: 17px;background-color: #0069d9;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
+
+        <div class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px; display:flex; flex-direction:column; align-items:center;" th:each="oglas : ${oglasi}">
+
+            <h2 th:text="${oglas.naslov}"></h2>
+            <p th:text="${oglas.poslodavac.ime} + ' ' + ${oglas.poslodavac.prezime}"></p>
+            <p th:text="${oglas.mesto}"></p>
+            <p th:text="${oglas.kategorija}"></p>
+            <p th:text="${oglas.podkategorija}"></p>
+            <p th:text="${oglas.plata} + ' RSD'"></p>
+            <p th:if="${oglas.radOdKuce}" style="background-color: green; border-radius:5px; color:white; width:150px;"> Moguc rad od kuce. </p>
+            <p th:if="${!oglas.radOdKuce}" style="background-color: red; border-radius:5px; color:white; width:150px;"> Nije moguc rad od kuce. </p>
+            <a th:href="@{/oglas/{id}(id=${oglas.id})}"> <input type="button" value="Pogledaj" style='margin-bottom: 17px;background-color: #0069d9;border: 0px;border-radius: 5px;padding:5px 15px;color:white'> </a>
+            <form th:action="@{/obrisiOglas/{id}(id=${oglas.id})}" method="POST">
+                <input sec:authorize="hasAuthority('ADMIN')" type="submit" value="Obrisi oglas" style='margin-bottom: 17px;background-color: red;border: 0px;border-radius: 5px;padding:5px 15px;color:white'> </a>
+            </form>
+
         </div>
-        
-        <div class="container mb-4 " style="text-align: center;border:1px solid black;border-radius: 15px">   
-            <h2>Trazi se cistacica</h2>
-            <p>Poslodavac : Miodrag Randjelovic </p>
-            <p>Grad : Kragujevac </p>
-            <p>Kategorija : Kucni poslovi </p>
-            <p>Poslodavac : Ciscenje </p>
-            <input type="button" value="Otvori" style='margin-bottom: 17px;background-color: #0069d9;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
-        </div>
-        
-        <div class="container mb-4 " style="text-align: center;border:1px solid black;border-radius: 15px">   
-            <h2>Trazi se cistacica</h2>
-            <p>Poslodavac : Miodrag Randjelovic </p>
-            <p>Grad : Kragujevac </p>
-            <p>Kategorija : Kucni poslovi </p>
-            <p>Poslodavac : Ciscenje </p>
-            <input type="button" value="Otvori" style='margin-bottom: 17px;background-color: #0069d9;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
-        </div>
-        
-       
+
        
          <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -13,7 +13,7 @@ and open the template in the editor.
         <meta name="author" content="" />
         <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+        <link href="/css/styles.css" rel="stylesheet" />
         <title>IMI Oglas</title>
         
         <style>
@@ -21,9 +21,10 @@ and open the template in the editor.
                 font-size:14px;
                 font-weight: 600;
             }
+
         </style>
     </head>
-    <body  style="background-image: url('assets/bg.jpg')">
+    <body  style="background-image: url('/assets/bg.jpg')">
         
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -31,46 +32,57 @@ and open the template in the editor.
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
 
-                        
-                        
+
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
+                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
+
+
+
                     </ul>
                 </div>
             </div>
             
         </nav>
-        <div class="container">
-            <div class="container" style="width: 380px;height:300px;margin-top: 30px">
-                <img src="assets/slika.jfif" width="380px" height="300px" style="border-radius: 12px">
-             
-            </div>
-            
-            <div class="d-flex justify-content-center pt-2">
-            <form style="text-align: left;">
-                <label for="ime">Ime :</label> <br>
-                <input type="text" id="ime" name="fname" style="margin-bottom: 2%"><br>
-                <label for="prezime">Prezime :</label> <br>
-                <input type="text" id="prezime" name="lname" style="margin-bottom: 2%"><br>
-                <label for="adresa">Adresa :</label> <br>
-                <input type="text" id="adresa" name="adress" style="margin-bottom: 2%"><br>
-                <label for="pol">Pol :</label> <br>
-                <input type="text" id="pol" name="sex" style="margin-bottom: 2%"><br>
-                <label for="datum">Datum rodjenja :</label> <br>
-                <input type="date" id="datum" name="date" style="margin-bottom: 2%"><br>
-                <label for="email">Email :</label> <br>
-                <input type="email" id="email" name="email" style="margin-bottom: 2%"><br>
-                <label for="username">Korisnicko ime :</label> <br>
-                <input type="text" id="username" name="username" style="margin-bottom: 2%"><br>
-                <label for="sifra">Sifra :</label> <br>
-                <input type="password" id="sifra" name="password" style="margin-bottom: 2%"><br>
-                
-                <input type="button" value="Sacuvaj" style="margin-left: 30%">
-                
-            </form>
+        <div class="container" style="margin-top:200px" >
+            <div>
+                <form id="izmenaPodataka" th:action="@{/MojProfil/IzmenaPodataka}" method="post" th:object="${unetiKorisnik}">
+
+                    <div>
+                        <input type="text" id="ime" class="form-control" th:field="*{ime}" placeholder="Ime *" value="" />
+                        <input type="text" id="prezime" class="form-control" th:field="*{prezime}" placeholder="Prezime *" value="" />
+                    </div>
+
+                    <div>
+                        <input type="date" id="datumRodjenja" class="form-control" th:field="*{datumRodjenja}" placeholder="Datum rodjenja *" value=""  />
+                    </div>
+
+                    <div>
+                        <select class="form-control" id="pol" th:field="*{pol}">
+                            <option th:value="Muski" style="font-weight: bold">Muski</option>
+                            <option th:value="Zenski" style="font-weight: bold">Zenski</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <input type="text" id="drzava" class="form-control" th:field="*{drzava}" placeholder="Drzava *" value="" />
+                    </div>
+
+                    <div>
+                        <input type="text" id="grad" class="form-control" th:field="*{grad}" placeholder="Grad *" value=""  />
+                    </div>
+
+                    <input type="submit" value="Sacuvaj izmene" style="margin-top:30px">
+
+                </form>
 
         </div>
        

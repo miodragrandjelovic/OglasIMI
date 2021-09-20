@@ -22,7 +22,7 @@ public class OglasiController {
 
     @GetMapping("/prikazoglasa")
     public String PrikaziOglase(@RequestParam(value="minPlata", defaultValue = "") String minPlata,
-                                @RequestParam(value="minPlata", defaultValue = "") String maxPlata,
+                                @RequestParam(value="maxPlata", defaultValue = "") String maxPlata,
                                 @RequestParam(value="mesto", defaultValue = "") String mesto,
                                 @RequestParam(value="kategorija", defaultValue = "") String kategorija,
                                 @RequestParam(value="radOdKuce", required = false) String radOdKuce,
@@ -46,7 +46,7 @@ public class OglasiController {
                 if(listaOglasa.get(i).getPlata() < Double.parseDouble(minPlata))
                     listaOglasa.remove(i);
 
-        if(maxPlata.equals(""))
+        if(!maxPlata.equals(""))
             for(int i = 0; i < listaOglasa.size(); i++)
                 if(listaOglasa.get(i).getPlata() > Double.parseDouble(maxPlata))
                     listaOglasa.remove(i);

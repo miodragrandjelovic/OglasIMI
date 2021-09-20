@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -11,9 +11,9 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+        <link href="/css/styles.css" rel="stylesheet" />
         <title>IMI Oglas</title>
         
         <style>
@@ -23,7 +23,7 @@ and open the template in the editor.
             }
         </style>
     </head>
-    <body  style="background-image: url('assets/bg.jpg')">
+    <body  style="background-image: url('/assets/bg.jpg')">
         
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -31,13 +31,20 @@ and open the template in the editor.
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
 
-                        
-                        
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
+                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
+
+
+
                     </ul>
                 </div>
             </div>
@@ -45,7 +52,7 @@ and open the template in the editor.
         </nav>
         
         <div class="container text-center mb-5 mt-4" style="width: 300px;height:240px">
-                <img src="assets/slikaoglas.jpg" width="380px" height="300px" style="margin-left: -45px">
+                <img src="/assets/slikaoglas.jpg" width="380px" height="300px" style="margin-left: -45px">
              
             </div>
         
@@ -53,27 +60,31 @@ and open the template in the editor.
             
             
             <div class="d-flex justify-content-center pt-2">
-            <form style="text-align: center">
+            <form style="text-align: center" th:action="@{'/oglas/postaviOglas'}" th:object="${oglas}" method="POST">
                 
                 <label for="naziv">Naziv oglasa :</label> <br>
-                <input type="text" id="naziv" name="naziv" style="margin-bottom: 2%;width:370px"><br>
-                <label for="grad">Grad :</label> <br>
-                <input type="text" id="grad" name="grad" style="margin-bottom: 2%;width:370px"><br>
+                <input type="text" id="naziv" name="naziv" style="margin-bottom: 2%;width:370px" th:field="*{naslov}"><br>
+
+                <label for="grad">Mesto :</label> <br>
+                <input type="text" id="grad" name="grad" style="margin-bottom: 2%;width:370px" th:field="*{mesto}"><br>
+
                 <label for="kategorija">Kategorija:</label> <br>
-                <input type="text" id="kategorija" name="kategorija" style="margin-bottom: 2%;width:370px"><br>
+                <input type="text" id="kategorija" name="kategorija" style="margin-bottom: 2%;width:370px" th:field="*{kategorija}"><br>
+
                 <label for="podkategorija">Podkategorija :</label> <br>
-                <input type="text" id="podkategorija" name="podkategorija" style="margin-bottom: 2%;width:370px"><br>
-                <label for="grad">Grad :</label> <br>
-                <input type="text" id="grad" name="grad" style="margin-bottom: 2%;width:370px"><br>
+                <input type="text" id="podkategorija" name="podkategorija" style="margin-bottom: 2%;width:370px" th:field="*{podkategorija}"><br>
+
                 <label for="plata">Plata :</label> <br>
-                <input type="text" id="plata" name="plata" style="margin-bottom: 2%;width:370px"><br>
-                <label for="opis">Opis posla :</label> <br>
-                <textarea name="opis" cols="50" rows="5"></textarea>
-                
-                <input type="button" value="Postavite oglas" style="margin-left: 2%;margin-top: 20px;margin-bottom: 20px">
-                
-                
-                
+                <input type="text" id="plata" name="plata" style="margin-bottom: 2%;width:370px" th:field="*{plata}"><br>
+
+                <label for="radOdKuce">Rad od kuce: </label>
+                <input type="checkbox" id="radOdKuce" name="radOdKuce" th:field="*{radOdKuce}"></br>
+
+                <label for="tekst">Opis posla :</label> <br>
+                <textarea id="tekst" cols="50" rows="5" th:field="*{tekst}"></textarea>
+
+                <input type="submit" value="Postavite oglas" style="margin-left: 2%;margin-top: 20px;margin-bottom: 20px">
+
             </form>
 
         </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -11,12 +11,12 @@ and open the template in the editor.
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="description" content="" />
         <meta name="author" content="" />
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
         <!-- Core theme CSS (includes Bootstrap)-->
-        <link href="css/styles.css" rel="stylesheet" />
+        <link href="/css/styles.css" rel="stylesheet" />
         <title>IMI Oglas</title>
     </head>
-    <body  style="background-image: url('assets/bg.jpg')">
+    <body  style="background-image: url('/assets/bg.jpg')">
         
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <div class="container">
@@ -24,14 +24,19 @@ and open the template in the editor.
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
                         <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
                         <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                        <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                        <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
 
-                        
-                        
+
+
                     </ul>
                 </div>
             </div>
@@ -40,25 +45,54 @@ and open the template in the editor.
         <div style="margin-top: 150px;"></div>
         <div class="container mt-5">
             <div class="text-center ">
-                <p style="border-bottom: 2px solid #BF3A3A;color:#BF3A3A" >Trazi se programer</p>
+                <p style="border-bottom: 2px solid #BF3A3A;color:#BF3A3A" ></p>
             </div>
-            
-            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Poslodavac: </span>Miodrag Randjelovic<br>
-             <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Kategorija: </span>Higijena<br>
-              <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Podkategorija: </span>Kucni poslovi<br>
-               <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Grad: </span>Kragujevac<br>
-                <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Plata: </span>45000din<br>
-                 <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;">Od: </span>08.07.2021 <span style="color:#BF3A3A;font-weight: 600;">Do: </span>31.07.2021<br>
-                 <span style="color:#BF3A3A;font-weight: 600;">Opis:  </span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.<br>
-                
-                 <p class='pt-3' style='font-weight: 600;'>Dodaj svoj CV:</p>
-                 
-                 <input type="button" value="Konkurisi" style='margin-bottom: 17px;background-color: #BF3A3A;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
-                 
-                 <p style="border-bottom: 2px solid #BF3A3A;color:#BF3A3A;margin-top:30px" ></p>
+
+            <img th:if="${vlasnikOglasa.slika} != null" th:src="${vlasnikOglasa.slika}" width="50" height="50" style="border-radius: 5px;margin:10px ">
+            <img th:if="${vlasnikOglasa.slika} == null" src="/assets/slika.png" width="50" height="50" style="border-radius: 5px;margin:10px ">
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${vlasnikOglasa.ime}"> </span>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${vlasnikOglasa.prezime}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${vlasnikOglasa.datumRodjenja}"> </span> <br> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${vlasnikOglasa.drzava}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${vlasnikOglasa.grad}"> </span> <br>
+
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${trenutniOglas.naslov}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${trenutniOglas.tekst}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${trenutniOglas.plata} + ' RSD'"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${trenutniOglas.datumPostavljanja}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${trenutniOglas.mesto}"> </span> <br>
+            <p th:if="${trenutniOglas.radOdKuce}" style="background-color: green; border-radius:5px; color:white; width:150px;"> Moguc rad od kuce. </p>
+            <p th:if="${!trenutniOglas.radOdKuce}" style="background-color: red; border-radius:5px; color:white; width:150px;"> Nije moguc rad od kuce. </p>
+
+
+            <form sec:authorize="hasAuthority('ADMIN')" method="POST" th:action="@{/oglas/{id}(id=${trenutniOglas.id})}">
+                <input type="submit" value="Konkurisi" style='margin-bottom: 17px;background-color: #BF3A3A;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
+            </form>
+            <form sec:authorize="hasAuthority('RADNIK')" method="POST" th:action="@{/oglas/{id}(id=${trenutniOglas.id})}">
+                <input type="submit" value="Konkurisi" style='margin-bottom: 17px;background-color: #BF3A3A;border: 0px;border-radius: 5px;padding:5px 15px;color:white'>
+            </form>
+            <p style="border-bottom: 2px solid #BF3A3A;color:#BF3A3A;margin-top:30px" ></p>
                  
         </div>
-       
+
+        <div style="margin-left:16%">
+
+        <h3> PRIJAVE </h3>
+
+        <div th:each="prijava : ${prijave}">
+            <p style="color:#BF3A3A;margin-top:30px" ></p>
+
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${prijava.korisnik.ime} + ' ' + ${prijava.korisnik.prezime}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${prijava.korisnik.datumRodjenja}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${prijava.korisnik.drzava}"> </span> <br>
+            <span style="color:#BF3A3A;line-height: 200%;font-weight: 600;" th:text="${prijava.korisnik.grad}"> </span> <br>
+            ------------------------------------------------------------------------------------------------------
+            ------------------------------------------------------------------------------------------------------
+
+            <p style="color:#BF3A3A;margin-top:30px" ></p>
+        </div>
+
+        </div>
        
          <!-- Bootstrap core JS-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

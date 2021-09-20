@@ -6,110 +6,181 @@
         <link href="css/reg.css" rel="stylesheet">
         <link href="css/styles.css" rel="stylesheet" />
 
-</head>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+                integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous">
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+                integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous">
+        </script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+                integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous">
+        </script>
+
+        <style>
+
+        </style>
+
+
+    </head>
 
 <body style="background-image: url('assets/bg.jpg')">
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand">Oglas IMI</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container">
+            <a class="navbar-brand">Oglas IMI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
+
+                </ul>
+            </div>
+        </div>
+
+    </nav>
+    <div class="container register">
+
+        <div class="row">
+            <div class="col-md-3 register-left">
+                <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt=""/>
+                <h3>Dobrodosli</h3>
+                <p>Samo Vas registracija deli od pronalaska zeljenog posla!</p>
+                <a th:href="@{'login'}"> <input type="submit" name="" value="Login" /> </a><br/>
+            </div>
+            <div class="col-md-9 register-right">
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                        <h3 class="register-heading" style="display:block;">Registracija</h3>
+
+                        <div>
+                            <input type="button" id="radnikDugme" class="btnRegister" onclick="predjiRadnik();" style="width:150px; height: 40px; padding:0px;" value="Radnik"/>
+                            <input disabled type="button" id="poslodavacDugme" class="btnRegister" onclick="predjiPoslodavac();" style="width:150px; height: 40px; padding:0px;background-color: #0040AA;"  value="Poslodavac"/>
+                        </div>
 
 
 
 
-            </ul>
+
+                        <form enctype="multipart/form-data" style="display:block;" class="row register-form" id="registracijaPoslodavac" th:action="@{/registracija/poslodavac}" method="post" th:object="${noviKorisnik}">
+                            <h3>Poslodavac</h3>
+
+                            <div class="form-group">
+                                <input type="text" id="korisnickoImeP" class="form-control" th:field="*{korisnickoIme}" placeholder="Korisnicko ime *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="email" id="eMailP" class="form-control" th:field="*{eMail}" placeholder="Email *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="password" id="lozinkaP" class="form-control" th:field="*{lozinka}" placeholder="Lozinka *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="imeP" class="form-control" th:field="*{ime}" placeholder="Ime *" value="" style="margin-bottom:15px"/>
+                                <input type="text" id="prezimeP" class="form-control" th:field="*{prezime}" placeholder="Prezime *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="date" id="datumRodjenjaP" class="form-control" th:field="*{datumRodjenja}" placeholder="Datum rodjenja *" value=""  />
+                            </div>
+
+                            <div class="form-group">
+                                <select class="form-control" id="polP" th:field="*{pol}">
+                                    <option th:value="Muski" style="font-weight: bold">Muski</option>
+                                    <option th:value="Zenski" style="font-weight: bold">Zenski</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="drzavaP" class="form-control" th:field="*{drzava}" placeholder="Drzava *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="gradP" class="form-control" th:field="*{grad}" placeholder="Grad *" value=""  />
+                            </div>
+
+
+                            <div class="form-group">
+                                <input type="file" id="fileP" name="file">
+                            </div>
+
+                            <input type="submit" value="Registruj se">
+
+                        </form>
+
+
+
+
+
+
+                        <form enctype="multipart/form-data" class="row register-form" style="display: none;" id="registracijaRadnik" th:action="@{/registracija/radnik}" method="post" th:object="${noviKorisnik}">
+                            <h3>Radnik</h3>
+
+                            <div class="form-group">
+                                <input type="text" cla="korisnickoImeR" class="form-control" th:field="*{korisnickoIme}" placeholder="Korisnicko ime *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="email" id="eMailR" class="form-control" th:field="*{eMail}" placeholder="Email *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="password" id="lozinkaR" class="form-control" th:field="*{lozinka}" placeholder="Lozinka *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="imeR" class="form-control" th:field="*{ime}" placeholder="Ime *" value="" />
+                                <input type="text" id="prezimeR" class="form-control" th:field="*{prezime}" placeholder="Prezime *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="date" id="datumRodjenjaR" class="form-control" th:field="*{datumRodjenja}" placeholder="Datum rodjenja *" value=""  />
+                            </div>
+
+                            <div class="form-group">
+                                <select class="form-control" id="polR" th:field="*{pol}">
+                                    <option th:value="Muski" style="font-weight: bold">Muski</option>
+                                    <option th:value="Zenski" style="font-weight: bold">Zenski</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="drzavaR" class="form-control" th:field="*{drzava}" placeholder="Drzava *" value="" />
+                            </div>
+
+                            <div class="form-group">
+                                <input type="text" id="gradR" class="form-control" th:field="*{grad}" placeholder="Grad *" value=""  />
+                            </div>
+
+
+                            <div class="form-group">
+                                <input type="file" id="fileR" name="file" enctype="multipart/form-data">
+                            </div>
+
+                            <input type="submit" value="Registruj se">
+
+                        </form>
+
+                    </div>
+
+                </div>
+            </div>
         </div>
     </div>
 
-</nav>
-<div class="container register">
-
-                <div class="row">
-                    <div class="col-md-3 register-left">
-                        <img src="https://image.ibb.co/n7oTvU/logo_white.png" alt=""/>
-                        <h3>Dobrodosli</h3>
-                        <p>Samo Vas registracija deli od pronalaska zeljenog posla!</p>
-                        <a th:href="@{'login'}"> <input type="submit" name="" value="Login" /> </a><br/>
-                    </div>
-                    <div class="col-md-9 register-right">
-                       
-                        <div class="tab-content" id="myTabContent">
-                            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                                <h3 class="register-heading" style="display:block;">Registracija</h3>
-
-
-                                <div>
-                                    <input type="button" class="btnRegister" style="width:150px; height: 40px; padding:0px;" value="Radnik"/>
-                                    <input type="button" class="btnRegister" style="width:150px; height: 40px; padding:0px;"  value="Poslodavac"/>
-                                </div>
-
-
-
-                                    <div class="row register-form">
-                                        <form th:action="@{/registracija/radnik}" method="post" th:object="${noviKorisnik}">
-                                        <div class="col-md-6">
-
-                                            <div class="form-group">
-                                                <input type="text" id="korisnickoIme" class="form-control" th:field="*{korisnickoIme}" placeholder="Korisnicko ime *" value="" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="email" id="eMail" class="form-control" th:field="*{eMail}" placeholder="Email *" value="" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="password" id="lozinka" class="form-control" th:field="*{lozinka}" placeholder="Lozinka *" value="" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="text" id="ime" class="form-control" th:field="*{ime}" placeholder="Ime *" value="" />
-                                                <input type="text" id="prezime" class="form-control" th:field="*{prezime}" placeholder="Prezime *" value="" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="date" id="datumRodjenja" class="form-control" th:field="*{datumRodjenja}" placeholder="Datum rodjenja *" value=""  />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <select class="form-control" id="pol" th:field="*{pol}">
-                                                    <option class="hidden"  selected disabled>Pol</option>
-                                                    <option th:value="Muski" style="font-weight: bold">Muski</option>
-                                                    <option th:value="Zenski" style="font-weight: bold">Zenski</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="text" id="drzava" class="form-control" th:field="*{drzava}" placeholder="Drzava *" value="" />
-                                            </div>
-
-                                            <div class="form-group">
-                                                <input type="text" id="grad" class="form-control" th:field="*{grad}" placeholder="Grad *" value=""  />
-                                            </div>
-
-
-                                            <div class="form-group">
-                                                <input type="file" id="file" name="file" required>
-                                            </div>
-
-                                        </div>
-
-                                        </form>
-                                    </div>
-
-                                </div>
-                            </div>
-                            
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-<script src="functions.js"></script>
+    <script src="../../js/scripts.js"></script>
 </body>
+
 </html>

@@ -30,19 +30,21 @@ public class RegistracijaLoginController {
     public String lozinkaPostoji() { return "greskaEmail"; }
 
     @GetMapping("/registracija")
-    public String registracija() {
+    public String registracija(@ModelAttribute("noviKorisnik") Korisnik noviKorisnik) {
         Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
         if (logovanKorisnik == null || logovanKorisnik instanceof AnonymousAuthenticationToken) { return "registracija"; }
         return "redirect:/";
     }
 
-    @PostMapping("/registracijaPoslodavac")
+    @PostMapping("/registracija/poslodavac")
     public String registrujSePoslodavac(@ModelAttribute("noviKorisnik") Korisnik noviKorisnik, @RequestParam("file") MultipartFile slika){
         try{
             KorisnikBaza korisnikBaza = new KorisnikBaza();
             noviKorisnik.setLozinka( (new BCryptPasswordEncoder()).encode(noviKorisnik.getLozinka()) );
-            korisnikBaza.unesiKorisnika(noviKorisnik, "POSLODAVAC");
-            korisnikBaza.postaviSlikuKorisnika(noviKorisnik.getId(), Base64.getEncoder().encode(slika.getBytes()));
+            if(slika == null || slika.isEmpty())
+                korisnikBaza.unesiKorisnika(noviKorisnik, "POSLODAVAC", null);
+            else
+                korisnikBaza.unesiKorisnika(noviKorisnik, "POSLODAVAC", slika.getBytes());
             korisnikBaza.zatvoriVezu();
         }
         catch(Exception e){
@@ -50,16 +52,18 @@ public class RegistracijaLoginController {
             else if(e.equals("greskaEmail")) return "redirect:/registracija/greska/email";
             else e.printStackTrace();
         }
-        return "redirect:/registracija/uspesnoRegistrovanje";
+        return "redirect:/login";
     }
 
-    @PostMapping("/registracijaRadnik")
+    @PostMapping("/registracija/radnik")
     public String registrujSeRadnik(@ModelAttribute("noviKorisnik") Korisnik noviKorisnik, @RequestParam("file") MultipartFile slika){
         try{
             KorisnikBaza korisnikBaza = new KorisnikBaza();
             noviKorisnik.setLozinka( (new BCryptPasswordEncoder()).encode(noviKorisnik.getLozinka()) );
-            korisnikBaza.unesiKorisnika(noviKorisnik, "RADNIK");
-            korisnikBaza.postaviSlikuKorisnika(noviKorisnik.getId(), Base64.getEncoder().encode(slika.getBytes()));
+            if(slika == null || slika.isEmpty())
+                korisnikBaza.unesiKorisnika(noviKorisnik, "RADNIK", null);
+            else
+                korisnikBaza.unesiKorisnika(noviKorisnik, "RADNIK", slika.getBytes());
             korisnikBaza.zatvoriVezu();
         }
         catch(Exception e){
@@ -67,7 +71,7 @@ public class RegistracijaLoginController {
             else if(e.equals("greskaEmail")) return "redirect:/registracija/greska/email";
             else e.printStackTrace();
         }
-        return "redirect:/registracija/uspesnoRegistrovanje";
+        return "redirect:/login";
     }
 
 }

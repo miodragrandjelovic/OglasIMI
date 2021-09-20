@@ -23,11 +23,11 @@ public class Oglas {
         this.id = id; this.poslodavac = poslodavac; this.naslov = naslov; this.tekst = tekst; this.mesto = mesto; this.datumPostavljanja = datumPostavljanja; this.datumZavrsetka = datumZavrsetka; this.plata = plata; this.kategorija = kategorija; this.podkategorija = podkategorija; this.radOdKuce = radOdKuce; this.aktiviran = aktiviran; this.slika = slika;
     }
 
-    public long getIdOglasa() {
+    public long getId() {
         return id;
     }
 
-    public void setIdOglasa(long id) {
+    public void setId(long id) {
         this.id = id;
     }
 

@@ -2,6 +2,7 @@ package com.example.Projekat.Kontroleri;
 
 import com.example.Projekat.Baza.KorisnikBaza;
 import com.example.Projekat.ObicneKlase.Korisnik;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -22,20 +23,22 @@ public class MojProfilController {
     public String prikaziProfil(Model model){
         Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
         try {
-            KorisnikBaza korisnikBaza = new KorisnikBaza();
-            model.addAttribute("logovanKorisnik", korisnikBaza.korisnikPoImenu(logovanKorisnik.getName()));
-            korisnikBaza.zatvoriVezu();
+            if(!(logovanKorisnik instanceof AnonymousAuthenticationToken)){
+                KorisnikBaza korisnikBaza = new KorisnikBaza();
+                model.addAttribute("logovanKorisnik", korisnikBaza.korisnikPoImenu(logovanKorisnik.getName()));
+                korisnikBaza.zatvoriVezu();
+            }
         } catch (Exception e) { e.printStackTrace(); }
-        return "moj-profil";
+        return "mojprofil";
     }
 
     @GetMapping("/MojProfil/IzmenaPodataka")
     public String prikaziIzmenuPodataka(@ModelAttribute("unetiKorisnik") Korisnik unetiKorisnik, Model model) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
         try {
             KorisnikBaza korisnikBaza = new KorisnikBaza();
-            Korisnik trenutniKorisnik = korisnikBaza.korisnikPoImenu(authentication.getName());
-            model.addAttribute("logovanKorisnik", korisnikBaza.korisnikPoImenu(authentication.getName()));
+            Korisnik trenutniKorisnik = korisnikBaza.korisnikPoImenu(logovanKorisnik.getName());
+            model.addAttribute("logovanKorisnik", trenutniKorisnik);
 
             unetiKorisnik.setIme(trenutniKorisnik.getIme());         unetiKorisnik.setPrezime(trenutniKorisnik.getPrezime());
             unetiKorisnik.seteMail(trenutniKorisnik.geteMail());     unetiKorisnik.setDatumRodjenja(trenutniKorisnik.getDatumRodjenja());
@@ -46,7 +49,7 @@ public class MojProfilController {
         catch (Exception e) {
             e.printStackTrace();
         }
-        return "izmenaPodataka";
+        return "izmenaprofila";
     }
 
     @PostMapping("/MojProfil/IzmenaPodataka")

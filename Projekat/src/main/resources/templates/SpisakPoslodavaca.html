@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <!--
 To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
@@ -24,11 +24,18 @@ and open the template in the editor.
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/index'}">Home</a></li>
+
+
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/'}">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/prikazoglasa'}">Oglasi</a></li>
-                        <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}">Log in</a></li>
-                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}">Registracija</a></li>
+                    <li class="nav-item"><a class="nav-link active" th:href="@{'/SpisakPoslodavaca'}">Spisak Poslodavaca</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/login'}" sec:authorize="isAnonymous()">Log in</a></li>
+                    <li class="nav-item"><a class="nav-link active" aria-current="page" th:href="@{'/registracija'}" sec:authorize="isAnonymous()">Registracija</a></li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil'}">Moj Profil</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/MojProfil/IzmenaPodataka'}">Izmeni podatke</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('ADMIN')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="hasAuthority('POSLODAVAC')"><a class="nav-link active" aria-current="page" th:href="@{'/oglas/postaviOglas'}">Postavi oglas</a> </li>
+                    <li class="nav-item" sec:authorize="!isAnonymous()"><a class="nav-link active" aria-current="page" th:href="@{'/logout'}">Logout</a> </li>
 
 
 
@@ -51,25 +58,12 @@ and open the template in the editor.
             <p> </p>
         </div>
         
-        <div class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px">   
-            <img src="assets/slika.jfif" width="150px" height="120px" style="border-radius: 5px;margin:10px ">
-            <h4>Marko Markovic</h4>
-            <h4>Beograd</h4>
-            
-        </div>
-        
-        <div class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px"> 
-            <img src="assets/slika.jfif" width="150px" height="120px" style="border-radius: 5px;margin:10px ">
-            <h4>Marko Markovic</h4>
-            <h4>Beograd</h4>
-            
-        </div>
-        
-        <div class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px">   
-            <img src="assets/slika.jfif" width="150px" height="120px" style="border-radius: 5px;margin:10px ">
-            <h4>Marko Markovic</h4>
-            <h4>Beograd</h4>
-            
+        <div th:each="poslodavac : ${listaKorisnika}" class="container mt-4 mb-4" style="text-align: center;border:1px solid black;border-radius: 15px">
+            <img th:if="${poslodavac.slika} != null" th:src="${poslodavac.slika}" width="150px" height="150px" style="border-radius: 5px;margin:10px ">
+            <img th:if="${poslodavac.slika} == null" src="assets/slika.png" width="150px" height="150px" style="border-radius: 5px;margin:10px ">
+            <h4 th:text="${poslodavac.ime} + ' ' + ${poslodavac.prezime}"></h4>
+            <h5 th:text="${poslodavac.drzava}"> </h5>
+            <h5 th:text="${poslodavac.grad}"> </h5>
         </div>
         
        

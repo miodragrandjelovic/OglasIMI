@@ -19,7 +19,7 @@ import java.util.ArrayList;
 public class OglasController {
 
     @GetMapping("/oglas/{idOglasa}")
-    public String prikaziOglas(@PathVariable("idOglasa") long idOglasa, Model model) throws SQLException {
+    public String prikaziOglas(@PathVariable("idOglasa") long idOglasa, Model model) throws SQLException, UnsupportedEncodingException {
         Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
         // LOGOVAN
         if (!(logovanKorisnik instanceof AnonymousAuthenticationToken)){
@@ -32,28 +32,7 @@ public class OglasController {
                 model.addAttribute("logovanKorisnik", trenutniKorisnik);
 
                 Oglas trenutniOglas = oglasDatabase.jedanOglas(idOglasa);
-
-                // PRIKAZ RADNIKA KOJI SU SE PRIJAVILI NA OGLAS
-                if(trenutniKorisnik.getId() == trenutniOglas.getPoslodavac().getId()){
-                    PrijavaNaOglasBaza prijaveDatabase = new PrijavaNaOglasBaza();
-                    ArrayList<Prijava> prijave = prijaveDatabase.getPrijaveZaOglas(idOglasa);
-                    model.addAttribute("prijave", prijave);
-                    prijaveDatabase.zatvoriVezu();
-                }
-
-                // DODAJ PREGLED AKO VIDI OGLAS PRVI PUT
-                if( !(oglasDatabase.pregledaoOglas(idOglasa, trenutniKorisnik.getId())) )
-                    oglasDatabase.dodajPregled(new Pregled(0, trenutniKorisnik, trenutniOglas));
-
-
-                // PRIKAZ DA LI JE LAJKOVO
-                if(oglasDatabase.lajkovoOglas(idOglasa, trenutniKorisnik.getId()))
-                    model.addAttribute("lajkovo", "/images/like_blue.png");
-                else
-                    model.addAttribute("lajkovo", "/images/like_white.png");
-
-                model.addAttribute("brojPregleda", oglasDatabase.dajBrojPregledaOglasa(idOglasa));
-                model.addAttribute("brojLajkova", oglasDatabase.dajBrojLajkovaOglasa(idOglasa));
+                model.addAttribute("oglas", trenutniOglas);
 
                 korisnikDatabase.zatvoriVezu();
                 oglasDatabase.zatvoriVezu();
@@ -65,30 +44,36 @@ public class OglasController {
         }
         // NIJE LOGOVAN
         else{
-            OglasBaza oglasDatabase = new OglasBaza();
-            model.addAttribute("brPregleda", oglasDatabase.dajBrojPregledaOglasa(idOglasa));
-            model.addAttribute("brLajkova", oglasDatabase.dajBrojLajkovaOglasa(idOglasa));
-            oglasDatabase.zatvoriVezu();
+
         }
         try{
-            OglasBaza oglasDatabase = new OglasBaza();
+            OglasBaza oglasBaza = new OglasBaza();
 
-            Oglas trenutniOglas = oglasDatabase.jedanOglas(idOglasa);
+            Oglas trenutniOglas = oglasBaza.jedanOglas(idOglasa);
             Korisnik vlasnikOglasa = trenutniOglas.getPoslodavac();
 
             model.addAttribute("trenutniOglas", trenutniOglas);
             model.addAttribute("vlasnikOglasa", vlasnikOglasa);
 
-            oglasDatabase.zatvoriVezu();
+            oglasBaza.zatvoriVezu();
         }
         catch(Exception e){
             e.printStackTrace();
         }
-        return "oglas";
+
+        OglasBaza oglasBaza = new OglasBaza();
+
+        ArrayList<Prijava> prijave = null;
+        prijave = oglasBaza.svePrijaveZaOglas(idOglasa);
+        model.addAttribute("prijave", prijave);
+
+        oglasBaza.zatvoriVezu();
+
+        return "posebanoglas";
     }
 
 
-    @PostMapping("/oglas/{idOglasa}/prijava")
+    @PostMapping("/oglas/{idOglasa}")
     public String prijaviSeNaOglas(@PathVariable("idOglasa") long idOglasa){
         try {
             KorisnikBaza korisnikBaza = new KorisnikBaza();
@@ -96,6 +81,7 @@ public class OglasController {
 
             Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
             Korisnik korisnik = korisnikBaza.korisnikPoImenu(logovanKorisnik.getName());
+
             Oglas oglas = oglasBaza.jedanOglas(idOglasa);
             oglasBaza.unesiPrijavu(korisnik, oglas);
 
@@ -108,33 +94,8 @@ public class OglasController {
         return "redirect:/oglas/" + idOglasa;
     }
 
-    @PostMapping(value = "/oglas/{idOglasa}/like")
-    public String dodajUkloniLajk(@PathVariable("idOglasa") long idOglasa) {
-        try {
-            Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
-
-            OglasBaza oglasBaza = new OglasBaza();
-            KorisnikBaza korisnikBaza = new KorisnikBaza();
-
-            Korisnik trenutniKorisnik = korisnikBaza.korisnikPoImenu(logovanKorisnik.getName());
-            Oglas trenutniOglas = oglasBaza.jedanOglas(idOglasa);
-
-            if(!(oglasBaza.lajkovoOglas(idOglasa, trenutniKorisnik.getId())))
-                oglasBaza.unesiLajk(new Lajk(0, trenutniKorisnik, trenutniOglas));
-            else
-                oglasBaza.ukloniLajk(new Lajk(0, trenutniKorisnik, trenutniOglas));
-
-            korisnikBaza.zatvoriVezu();
-            oglasBaza.zatvoriVezu();
-        }
-        catch(SQLException | UnsupportedEncodingException e){
-            e.printStackTrace();
-        }
-        return "redirect:/oglas/" + idOglasa;
-    }
-
     @GetMapping("/oglas/postaviOglas")
-    public String prikaziPostavljanjeOglsa(Model model) {
+    public String prikaziPostavljanjeOglasa(@ModelAttribute("oglas") Oglas oglas, Model model) {
         try {
             Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
             KorisnikBaza korisnikBaza = new KorisnikBaza();
@@ -144,7 +105,7 @@ public class OglasController {
         catch (Exception e) {
             e.printStackTrace();
         }
-        return "postaviOglas";
+        return "kreirajoglas";
     }
 
     @PostMapping("/oglas/postaviOglas")
@@ -159,12 +120,26 @@ public class OglasController {
 
             oglasBaza.zatvoriVezu();
             korisnikBaza.zatvoriVezu();
-            return "redirect:/oglasi";
+            return "redirect:/prikazoglasa";
         }
         catch (Exception e) {
             e.printStackTrace();
         }
         return "redirect:/oglas/postaviOglas";
+    }
+
+    @PostMapping("/obrisiOglas/{idOglasa}")
+    public String postaviOglas(@PathVariable("idOglasa") long idOglasa) {
+        Authentication logovanKorisnik = SecurityContextHolder.getContext().getAuthentication();
+        try {
+            OglasBaza oglasBaza = new OglasBaza();
+            oglasBaza.iskljuciOglas(idOglasa);
+            oglasBaza.zatvoriVezu();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/prikazoglasa";
     }
 
 }
